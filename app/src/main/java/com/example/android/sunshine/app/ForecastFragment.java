@@ -110,7 +110,7 @@ public class ForecastFragment extends Fragment {
             int numDays = 7;
 
             try {
-                final String FORECAST_BASE_URL = "api.openweathermap.org/data/2.5/forecast/daily?";
+                final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
                 final String QUERY_PARAM = "id";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
