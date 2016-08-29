@@ -54,12 +54,7 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         List<String> weekForecast = new ArrayList<String>();
-        weekForecast.add("Today - Cloudy - 31 / 25");
-        weekForecast.add("Tomorrow - Cloudy - 32 / 24");
-        weekForecast.add("Sun - Rainy - 32 / 25");
-        weekForecast.add("Mon - Cloudy - 33 / 26");
-        weekForecast.add("Tues - Cloudy - 34 / 26");
-        weekForecast.add("Weds - Cloudy - 34 / 27");
+
 
 
 
@@ -198,10 +193,19 @@ public class ForecastFragment extends Fragment {
         }
 
 
+        @Override
+        protected void onPostExecute(String[] results) {
+            if(results != null){
+                forecastAdapter.clear();
+                for(String dayForecastStr : results){
+                    forecastAdapter.add(dayForecastStr);
+                }
+            }
+        }
 
         /* The date/time conversion code is going to be moved outside the asynctask later,
-         * so for convenience we're breaking it out into its own method now.
-         */
+                 * so for convenience we're breaking it out into its own method now.
+                 */
         private String getReadableDateString(long time){
             // Because the API returns a unix timestamp (measured in seconds),
             // it must be converted to milliseconds in order to be converted to valid date.
