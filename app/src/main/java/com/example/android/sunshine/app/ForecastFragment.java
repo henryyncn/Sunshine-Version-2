@@ -4,6 +4,7 @@ package com.example.android.sunshine.app;
  * Created by HenryZ on 2016/8/10 0010.
  */
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -81,7 +82,7 @@ public class ForecastFragment extends Fragment {
 
         if(id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("http://api.openweathermap.org/data/2.5/forecast/daily?q=Chongqing,cn&mode=json&units=metric&cnt=7&appid=9b038956801341af09052b3376441fb4");
+            weatherTask.execute("1814905");
             return true;
         }
 
@@ -93,16 +94,43 @@ public class ForecastFragment extends Fragment {
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         @Override
-        protected String doInBackground(String... urlString) {
+        protected String doInBackground(String... params) {
+
+            if(params.length == 0){
+                return null;
+            }
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
+
+            String format = "json";
+            String units = "metric";
+            int numDays = 7;
+
             try {
+                final String FORECAST_BASE_URL = "api.openweathermap.org/data/2.5/forecast/daily?";
+                final String QUERY_PARAM = "id";
+                final String FORMAT_PARAM = "mode";
+                final String UNITS_PARAM = "units";
+                final String DAYS_PARAM = "cnt";
+                final String APPID_PARAM = "appid";
+                final String OPEN_WEATHER_MAP_API_KEY = "9b038956801341af09052b3376441fb4";
+
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(FORMAT_PARAM, format)
+                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                        .appendQueryParameter(APPID_PARAM, OPEN_WEATHER_MAP_API_KEY)
+                        .build();
+
                 // Construct the URL for the OpenWeatherMap query// Possible parameters are available at OWM's forecast API page, at// http://openweathermap.org/API#forecast
-                URL url = new URL(urlString[0]);
-                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=400044,cn&mode=json&units=metric&cnt=7&appid=9b038956801341af09052b3376441fb4");
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+                URL url = new URL(builtUri.toString());
+
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -125,7 +153,7 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
-                Log.v(LOG_TAG, "Forecast JOSN String" + forecastJsonStr);
+                Log.v(LOG_TAG, "Forecast JOSN String " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting// to parse it.
